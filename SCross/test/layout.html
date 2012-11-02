@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title> test </title>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="full-screen" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta content="email=no" name="format-detection" />
+		<meta content="telephone=no" name="format-detection" />
+		<meta id="screenOri" name="screen-orientation" content="landscape" />
+		<meta name="viewport" content="width=480 ,user-scalable=no " />
+		<script>
+			var dpi = (window.devicePixelRatio *  (240 / 1.5)) * 800 / window.screen.availWidth ;
+				documnet.write ('<meta name="viewport" content="user-scalable=no,target-densityDpi='+ dpi +';"/>');
+
+		</script>
+		<style>
+			textarea, input {
+				/*font-size: 200%;*/
+			}
+
+			#headBar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				padding: 5px 0;
+				background-color: #CCCCCC;
+			}
+
+			#headBar input[type="button"] {
+				float: right;
+				width: 60px;
+				height: 50px;
+				margin-right: 20px;
+			}
+
+			#label {
+				width: 120px;
+				height: 50px;
+				margin-left: 10px;
+				background-color: white;
+				text-indent: 10px;
+			}
+
+			#content {
+				margin: 70px 0 0 0;
+			}
+
+			#phonetic {
+				text-indent: 10px;
+			}
+
+			#trans {
+				display: block;
+			}
+		</style>
+
+	</head>
+	<body style="width:100% ;background-color: #000000;">
+		<div id="headBar">
+			<input id="label" disabled="disabled" value="input"/>
+			<input id="setting" type="button"value="设置"/>
+			<input id="next" type="button" value=">>" />
+			<input id="pause" type="button" value="||" />
+			<input id="last" type="button" value="<<" />
+		</div>
+		<div id="content">
+			<input id="phonetic" disabled="disabled" value="input"/>
+			<textarea  id="trans" name="Name" rows="10" cols="50"> </textarea>
+		</div>
+	</body>
+
+	<script>
+		function XMLDoc() {
+			// 具体内容
+			this.xmlFile = "";
+			// 加载路径
+			this.url = "";
+			this.xmlHttp = new XMLHttpRequest();
+			this.data = [];
+		};
+
+		// 属性
+		XMLDoc.prototype.parseXMLDoc = function() {
+			// 加载解析XML文件的成员方法
+			var docParser;
+			if (window.ActiveXObject) {// IE浏览器支持
+				docParser = new ActiveXObject("Microsoft.XMLDOM");
+				docParser.async = "false";
+				docParser.load(this.xmlFile);
+				return docParser;
+			} else if (window.DOMParser) {// 非ie浏览器支持
+				docParser = new DOMParser()
+				return docParser.parseFromString(this.xmlFile, "text/xml");
+			} else {// 如果不是IE和Mozillia浏览器则无法解析，返回false。
+				return false;
+			}
+		}
+		XMLDoc.prototype.parse = function(readTagName, readTagCnt) {
+			// 打印输出读取的XML文件的内容信息
+			var xmlDoc = this.parseXMLDoc();
+			// 调用成员方法parseXMLDoc()加载解析XML文件
+			var users = xmlDoc.getElementsByTagName(readTagName);
+			// 获取指定标签名称的数据的一个数组users
+			var item;
+			for (var i = 0; i < users.length; i++) {// 双重循环迭代输出
+				var cell = {};
+				for (var j = 0; j < users[i].childNodes.length; j++) {
+					item = users[i].childNodes[j];
+					if (item && item.nodeType == 1) {
+						var tagname = item.tagName;
+						var textvalue = item.textContent;
+						cell[tagname] = textvalue; 
+					}
+				}
+				this.data.push(cell);
+			}
+			return this.data ;
+		}
+
+	XMLDoc.prototype.loadXMLDoc = function (url , callback) {
+		url = url || this.url ;
+		var xd = this ;
+		var xmlHttp = this.xmlHttp ;
+		xmlHttp.onreadystatechange =  function(event) {
+				if (this.readyState != 4) {
+					return;
+				}
+				xd.xmlFile = this.responseText ;
+				callback.call(xd);
+			};
+	
+		this.xmlHttp.open("GET", url, false);
+		this.xmlHttp.send(null);
+	}
+	</script>
+	
+	<script>
+		//
+		var label = document.querySelector("#label");
+		var phonetic = document.querySelector("#phonetic");
+		var trans = document.querySelector("#trans");
+		//
+		var xd = new XMLDoc();
+		xd.url = "default.xml";
+		xd.loadXMLDoc(null, function(){
+			// 获取
+			this.parse("item");
+			console.log(this.data);
+			setData(this.data);
+			this = null ;
+		});
+		
+		function setData(data){
+			var data  = data[2];
+			label.value = data.word ;
+			phonetic.value = data.phonetic ;
+			trans.innerText = data.trans ;
+		}
+		
+		
+	</script>
+</html>

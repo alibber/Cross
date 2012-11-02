@@ -1,0 +1,35 @@
+<!--
+<div style="width:100px;height:100px;border:1px solid black">
+	HELLO WORLD
+</div>
+-->
+<div id="dp" style="width:100px;height:100px;border:1px solid black">
+	<div id="d0"  style="width:100px;height:100px;border:1px solid black">
+		<div id="d00" style="width:100px;height:100px;border:1px solid black">
+		<label>00</label>
+	</div>
+	</div>
+	<div id="d1" style="width:100px;height:100px;border:1px solid black">
+		<label>001111</label>
+	</div>
+	<div id="d2" style="width:100px;height:100px;border:1px solid black">
+		<label>002222</label>
+	</div>
+		<div id="d3" style="width:100px;height:100px;border:1px solid black">
+		<label>003333</label>
+	</div>
+	<div id="d4" style="width:100px;height:100px;border:1px solid black">
+		<label>004444</label>
+	</div>
+</div>
+
+<script src="../src/zepto.js"></script>
+<script src="../src/event.js"></script>
+<script src="../src/fx.js"></script>
+
+<script>
+	$('div').anim({
+		rotate : '720deg',
+		opacity : .5
+	}, 2, 'ease-out')
+</script>
